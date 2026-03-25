@@ -1729,6 +1729,26 @@ pub fn main_device_name(name: String) {
     *crate::common::DEVICE_NAME.lock().unwrap() = name;
 }
 
+pub fn main_get_sysinfo_json() -> SyncReturn<String> {
+    let mut info = crate::common::get_sysinfo();
+    // Get local IP by connecting to a remote address (no actual traffic sent)
+    let ip = match std::net::UdpSocket::bind("0.0.0.0:0") {
+        Ok(socket) => {
+            if socket.connect("8.8.8.8:80").is_ok() {
+                socket
+                    .local_addr()
+                    .map(|a| a.ip().to_string())
+                    .unwrap_or_default()
+            } else {
+                String::new()
+            }
+        }
+        Err(_) => String::new(),
+    };
+    info["ip"] = serde_json::json!(ip);
+    SyncReturn(info.to_string())
+}
+
 pub fn main_remove_peer(id: String) {
     PeerConfig::remove(&id);
 }
