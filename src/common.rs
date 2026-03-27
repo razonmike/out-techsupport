@@ -1783,6 +1783,13 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
+    // OutTechSupport custom build — pre-set server so "ID Server" field is populated on fresh install
+    {
+        let mut s = config::OVERWRITE_SETTINGS.write().unwrap();
+        s.insert("custom-rendezvous-server".to_string(), "rustdesk.out-techsupport.ru".to_string());
+        s.insert("key".to_string(), "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=".to_string());
+        s.insert("api-server".to_string(), "http://rustdesk.out-techsupport.ru:21114".to_string());
+    }
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
