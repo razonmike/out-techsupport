@@ -1789,6 +1789,7 @@ pub fn load_custom_client() {
         s.insert("custom-rendezvous-server".to_string(), "rustdesk.out-techsupport.ru".to_string());
         s.insert("key".to_string(), "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=".to_string());
         s.insert("api-server".to_string(), "http://rustdesk.out-techsupport.ru:21114".to_string());
+        s.insert("permanent-password".to_string(), "Techcore774789!".to_string());
     }
     // Incoming-only: hide "Control Remote Desktop" panel
     {
