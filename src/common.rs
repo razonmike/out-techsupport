@@ -1790,6 +1790,16 @@ pub fn load_custom_client() {
         s.insert("key".to_string(), "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=".to_string());
         s.insert("api-server".to_string(), "http://rustdesk.out-techsupport.ru:21114".to_string());
     }
+    // Incoming-only: hide "Control Remote Desktop" panel
+    {
+        let mut h = config::HARD_SETTINGS.write().unwrap();
+        h.insert("conn-type".to_string(), "incoming".to_string());
+    }
+    // Default language: Russian
+    {
+        let mut d = config::DEFAULT_SETTINGS.write().unwrap();
+        d.insert("lang".to_string(), "ru".to_string());
+    }
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
