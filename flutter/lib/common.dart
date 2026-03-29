@@ -3670,7 +3670,7 @@ Widget loadPowered(BuildContext context) {
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
-                ?.copyWith(fontSize: 9, decoration: TextDecoration.underline),
+                ?.copyWith(fontSize: 14, decoration: TextDecoration.underline),
           )),
     ),
   ).marginOnly(top: 6);
