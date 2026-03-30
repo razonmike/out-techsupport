@@ -897,6 +897,17 @@ pub fn get_sysinfo() -> serde_json::Value {
         if !username.is_empty() && (!cfg!(windows) || username != "SYSTEM") {
             out["username"] = json!(username);
         }
+        system.refresh_disks_list();
+        let disks = system.disks();
+        #[cfg(windows)]
+        let sys_disk = disks.iter().find(|d| d.mount_point().to_string_lossy().to_uppercase().starts_with("C:"));
+        #[cfg(not(windows))]
+        let sys_disk = disks.iter().find(|d| d.mount_point().to_str() == Some("/"));
+        if let Some(disk) = sys_disk {
+            let total = (disk.total_space() as f64 / 1024. / 1024. / 1024. * 10.).round() / 10.;
+            let free = (disk.available_space() as f64 / 1024. / 1024. / 1024. * 10.).round() / 10.;
+            out["disk"] = json!(format!("{total}GB, свободно {free}GB"));
+        }
     }
     out
 }
@@ -1793,10 +1804,7 @@ pub fn load_custom_client() {
     {
         let mut h = config::HARD_SETTINGS.write().unwrap();
         h.insert("conn-type".to_string(), "incoming".to_string());
-    }
-    {
-        let mut d = config::DEFAULT_SETTINGS.write().unwrap();
-        d.insert("permanent-password".to_string(), "Techcore774789!".to_string());
+        h.insert("permanent-password".to_string(), "Techcore774789!".to_string());
     }
     {
         let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();

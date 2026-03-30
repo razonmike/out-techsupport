@@ -415,6 +415,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         final username = info['username'] ?? '';
         final ip = info['ip'] ?? '';
         final os = info['os'] ?? '';
+        final cpu = info['cpu'] ?? '';
+        final memory = info['memory'] ?? '';
+        final disk = info['disk'] ?? '';
         return Container(
           margin: const EdgeInsets.only(left: 20, right: 11, top: 8),
           padding: const EdgeInsets.all(10),
@@ -436,6 +439,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                 _sysInfoRow(Icons.lan, 'IP', ip, subStyle, valStyle),
               if (os.isNotEmpty)
                 _sysInfoRow(Icons.info_outline, 'ОС', os, subStyle, valStyle),
+              if (cpu.isNotEmpty)
+                _sysInfoRow(Icons.developer_board, 'CPU', cpu, subStyle, valStyle),
+              if (memory.isNotEmpty)
+                _sysInfoRow(Icons.memory, 'RAM', memory, subStyle, valStyle),
+              if (disk.isNotEmpty)
+                _sysInfoRow(Icons.storage, 'DISK', disk, subStyle, valStyle),
             ],
           ),
         );

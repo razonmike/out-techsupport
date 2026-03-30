@@ -3689,10 +3689,18 @@ Widget loadLogo() {
               return Container();
             },
           );
-          return Container(
-            constraints: BoxConstraints(maxWidth: 300, maxHeight: 60),
-            child: image,
-          ).marginOnly(left: 12, right: 12, top: 12);
+          return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                launchUrl(Uri.parse('https://out-techsupport.ru'));
+              },
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 300, maxHeight: 60),
+                child: image,
+              ).marginOnly(left: 12, right: 12, top: 12),
+            ),
+          );
         }
         return const Offstage();
       });
