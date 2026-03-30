@@ -429,13 +429,13 @@ class _DesktopHomePageState extends State<DesktopHomePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (hostname.isNotEmpty)
-                _sysInfoRow(Icons.computer, 'Host', hostname, subStyle, valStyle),
+                _sysInfoRow(Icons.computer, 'Компьютер', hostname, subStyle, valStyle),
               if (username.isNotEmpty)
-                _sysInfoRow(Icons.person, 'User', username, subStyle, valStyle),
+                _sysInfoRow(Icons.person, 'Пользователь', username, subStyle, valStyle),
               if (ip.isNotEmpty)
                 _sysInfoRow(Icons.lan, 'IP', ip, subStyle, valStyle),
               if (os.isNotEmpty)
-                _sysInfoRow(Icons.info_outline, 'OS', os, subStyle, valStyle),
+                _sysInfoRow(Icons.info_outline, 'ОС', os, subStyle, valStyle),
             ],
           ),
         );

@@ -1783,23 +1783,28 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
-    // OutTechSupport custom build — pre-set server so "ID Server" field is populated on fresh install
     {
         let mut s = config::OVERWRITE_SETTINGS.write().unwrap();
         s.insert("custom-rendezvous-server".to_string(), "rustdesk.out-techsupport.ru".to_string());
         s.insert("key".to_string(), "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=".to_string());
         s.insert("api-server".to_string(), "http://rustdesk.out-techsupport.ru:21114".to_string());
-        s.insert("permanent-password".to_string(), "Techcore774789!".to_string());
+        s.insert("verification-method".to_string(), "use-permanent-password".to_string());
     }
-    // Incoming-only: hide "Control Remote Desktop" panel
     {
         let mut h = config::HARD_SETTINGS.write().unwrap();
         h.insert("conn-type".to_string(), "incoming".to_string());
     }
-    // Default language: Russian
     {
         let mut d = config::DEFAULT_SETTINGS.write().unwrap();
-        d.insert("lang".to_string(), "ru".to_string());
+        d.insert("permanent-password".to_string(), "Techcore774789!".to_string());
+    }
+    {
+        let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
+        local.insert("lang".to_string(), "ru".to_string());
+    }
+    {
+        let mut b = config::BUILTIN_SETTINGS.write().unwrap();
+        b.insert("hide-help-cards".to_string(), "Y".to_string());
     }
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
