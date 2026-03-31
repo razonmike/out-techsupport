@@ -149,6 +149,7 @@ jobs:
       - name: Build msi
         run: |
           Rename-Item ./rustdesk/rustdesk.exe TechSupport.exe
+          pip install pillow --quiet
           pushd ./res/msi
           python preprocess.py --arp --app-name TechSupport -d ../../rustdesk
           nuget restore msi.sln

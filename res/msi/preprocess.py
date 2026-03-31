@@ -447,11 +447,22 @@ def prepare_resources():
     if icon_src.exists():
         icon_dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(icon_src, icon_dst)
-        return True
     else:
         # unreachable
         print(f"Error: icon.ico not found in {icon_src}")
         return False
+
+    # Generate brand BMP assets for installer dialogs
+    gen_script = Path(sys.argv[0]).parent.joinpath("gen_brand_assets.py")
+    if gen_script.exists():
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("gen_brand_assets", gen_script)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod.generate_banner()
+        mod.generate_dialog()
+
+    return True
 
 
 def init_global_vars(dist_dir, app_name, args):
