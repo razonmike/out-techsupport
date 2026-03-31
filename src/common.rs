@@ -897,16 +897,36 @@ pub fn get_sysinfo() -> serde_json::Value {
         if !username.is_empty() && (!cfg!(windows) || username != "SYSTEM") {
             out["username"] = json!(username);
         }
-        system.refresh_disks_list();
-        let disks = system.disks();
         #[cfg(windows)]
-        let sys_disk = disks.iter().find(|d| d.mount_point().to_string_lossy().to_uppercase().starts_with("C:"));
-        #[cfg(not(windows))]
-        let sys_disk = disks.iter().find(|d| d.mount_point().to_str() == Some("/"));
-        if let Some(disk) = sys_disk {
-            let total = (disk.total_space() as f64 / 1024. / 1024. / 1024. * 10.).round() / 10.;
-            let free = (disk.available_space() as f64 / 1024. / 1024. / 1024. * 10.).round() / 10.;
-            out["disk"] = json!(format!("{total}GB, свободно {free}GB"));
+        {
+            use std::os::windows::ffi::OsStrExt;
+            extern "system" {
+                fn GetDiskFreeSpaceExW(
+                    lp_directory_name: *const u16,
+                    lp_free_bytes_available: *mut u64,
+                    lp_total_number_of_bytes: *mut u64,
+                    lp_total_number_of_free_bytes: *mut u64,
+                ) -> i32;
+            }
+            let path: Vec<u16> = std::ffi::OsStr::new("C:\\")
+                .encode_wide()
+                .chain(std::iter::once(0u16))
+                .collect();
+            let mut free_bytes = 0u64;
+            let mut total_bytes = 0u64;
+            let mut total_free_bytes = 0u64;
+            unsafe {
+                if GetDiskFreeSpaceExW(
+                    path.as_ptr(),
+                    &mut free_bytes,
+                    &mut total_bytes,
+                    &mut total_free_bytes,
+                ) != 0 {
+                    let total = (total_bytes as f64 / 1_073_741_824.0 * 10.0).round() / 10.0;
+                    let free = (free_bytes as f64 / 1_073_741_824.0 * 10.0).round() / 10.0;
+                    out["disk"] = json!(format!("{total}GB, свободно {free}GB"));
+                }
+            }
         }
     }
     out
