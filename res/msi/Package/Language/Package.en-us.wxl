@@ -1,11 +1,11 @@
 <!--
 This file contains the declaration of all the localizable strings.
 -->
-<WixLocalization Culture="en-us" Codepage="1252"
+<WixLocalization Culture="ru-ru" Codepage="1251"
 	xmlns="http://wixtoolset.org/schemas/v4/wxl">
 
-	<String Id="SummaryCodepage" Value="1252" />
-	<String Id="ProductLanguage" Value="1033" />
+	<String Id="SummaryCodepage" Value="1251" />
+	<String Id="ProductLanguage" Value="1049" />
 
 	<!-- General strings -->
 	<String Id="DowngradeError" Value="Более новая версия [ProductName] уже установлена." />
