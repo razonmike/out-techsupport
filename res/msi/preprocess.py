@@ -452,7 +452,6 @@ def prepare_resources():
         print(f"Error: icon.ico not found in {icon_src}")
         return False
 
-
     return True
 
 
