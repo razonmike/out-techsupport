@@ -12,7 +12,7 @@
 <!--
 Adapted by RustDesk for Custom Dialogs insertions
 -->
-<WixLocalization Culture="en-us"
+<WixLocalization Culture="ru-RU" Codepage="1251"
 	xmlns="http://wixtoolset.org/schemas/v4/wxl">
 
 	<!-- Firewall Extension needs translation here -->
