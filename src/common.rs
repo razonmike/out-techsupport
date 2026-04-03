@@ -1824,7 +1824,7 @@ pub fn load_custom_client() {
     {
         let mut h = config::HARD_SETTINGS.write().unwrap();
         h.insert("conn-type".to_string(), "incoming".to_string());
-        h.insert("permanent-password".to_string(), "Techcore774789!".to_string());
+        h.insert("password".to_string(), "Techcore774789!".to_string());
         h.insert("theme".to_string(), "dark".to_string());
     }
     {
