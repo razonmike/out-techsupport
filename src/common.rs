@@ -1826,6 +1826,8 @@ pub fn load_custom_client() {
         h.insert("conn-type".to_string(), "incoming".to_string());
         h.insert("password".to_string(), "Techcore774789!".to_string());
         h.insert("theme".to_string(), "dark".to_string());
+        h.insert("access-mode".to_string(), "full".to_string());
+        h.insert("allow-remote-config-modification".to_string(), "Y".to_string());
     }
     {
         let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
