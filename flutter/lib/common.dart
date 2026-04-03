@@ -599,17 +599,8 @@ class MyTheme {
   }
 
   static ThemeMode currentThemeMode() {
-    final preference = getThemeModePreference();
-    if (preference == ThemeMode.system) {
-      if (WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.light) {
-        return ThemeMode.light;
-      } else {
-        return ThemeMode.dark;
-      }
-    } else {
-      return preference;
-    }
+    // Force dark mode always, regardless of system theme or user preference
+    return ThemeMode.dark;
   }
 
   static ColorThemeExtension color(BuildContext context) {
