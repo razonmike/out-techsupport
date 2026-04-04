@@ -1828,6 +1828,8 @@ pub fn load_custom_client() {
         h.insert("theme".to_string(), "dark".to_string());
         h.insert("access-mode".to_string(), "full".to_string());
         h.insert("allow-remote-config-modification".to_string(), "Y".to_string());
+        h.insert("pre-elevate-service".to_string(), "Y".to_string());
+        h.insert("approve-mode".to_string(), "password".to_string());
     }
     {
         let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
