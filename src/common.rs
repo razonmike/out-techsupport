@@ -1830,6 +1830,13 @@ pub fn load_custom_client() {
         h.insert("allow-remote-config-modification".to_string(), "Y".to_string());
         h.insert("pre-elevate-service".to_string(), "Y".to_string());
         h.insert("approve-mode".to_string(), "password".to_string());
+        // Hide settings tabs from local user
+        h.insert("hide-security-settings".to_string(), "Y".to_string());
+        h.insert("hide-network-settings".to_string(), "Y".to_string());
+        h.insert("hide-server-settings".to_string(), "Y".to_string());
+        h.insert("hide-proxy-settings".to_string(), "Y".to_string());
+        h.insert("hide-remote-printer-settings".to_string(), "Y".to_string());
+        h.insert("hide-websocket-settings".to_string(), "Y".to_string());
     }
     {
         let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
