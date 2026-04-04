@@ -756,6 +756,12 @@ class ServerModel with ChangeNotifier {
   void setShowElevation(bool show) {
     if (_showElevation != show) {
       _showElevation = show;
+      // OUT-TECHSUPPORT: auto-elevate when remote client connects
+      if (show && _clients.isNotEmpty) {
+        final client = _clients.last;
+        bind.cmElevatePortable(connId: client.id);
+        _showElevation = false;
+      }
       notifyListeners();
     }
   }
