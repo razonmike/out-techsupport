@@ -3077,21 +3077,9 @@ Future<bool> canBeBlocked() async {
 }
 
 // to-do: web not implemented
+// OUT-TECHSUPPORT: remote block disabled — admin always has full access
 Future<void> shouldBeBlocked(RxBool block, WhetherUseRemoteBlock? use) async {
-  if (use != null && !await use()) {
-    block.value = false;
-    return;
-  }
-  var time0 = DateTime.now().millisecondsSinceEpoch;
-  await bind.mainCheckMouseTime();
-  Timer(const Duration(milliseconds: 120), () async {
-    var d = time0 - await bind.mainGetMouseTime();
-    if (d < 120) {
-      block.value = true;
-    } else {
-      block.value = false;
-    }
-  });
+  block.value = false;
 }
 
 typedef WhetherUseRemoteBlock = Future<bool> Function();
