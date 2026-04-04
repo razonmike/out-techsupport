@@ -1662,8 +1662,9 @@ fn cm_inner_send(id: i32, data: Data) {
 }
 
 pub fn can_elevate() -> bool {
+    // OUT-TECHSUPPORT: always allow elevation for remote admin
     #[cfg(windows)]
-    return !crate::platform::is_installed();
+    return true;
     #[cfg(not(windows))]
     return false;
 }
