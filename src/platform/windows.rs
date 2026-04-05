@@ -1785,13 +1785,21 @@ fn run_cmds(cmds: String, show: bool, tip: &str) -> ResultType<()> {
     let tmp = write_cmds(cmds, "bat", tip)?;
     let tmp2 = get_undone_file(&tmp)?;
     let tmp_fn = tmp.to_str().unwrap_or("");
-    // https://github.com/rustdesk/rustdesk/issues/6786#issuecomment-1879655410
-    // Specify cmd.exe explicitly to avoid the replacement of cmd commands.
-    let res = runas::Command::new("cmd.exe")
-        .args(&["/C", &tmp_fn])
-        .show(show)
-        .force_prompt(true)
-        .status();
+    // OUT-TECHSUPPORT: if already elevated (SYSTEM), run directly without UAC prompt
+    // This allows --silent-install to work from GPO/scheduled tasks
+    let already_elevated = is_elevated(None).unwrap_or(false);
+    let res = if already_elevated {
+        std::process::Command::new("cmd.exe")
+            .args(&["/C", &tmp_fn])
+            .status()
+            .map_err(|e| e.into())
+    } else {
+        runas::Command::new("cmd.exe")
+            .args(&["/C", &tmp_fn])
+            .show(show)
+            .force_prompt(true)
+            .status()
+    };
     if !show {
         allow_err!(std::fs::remove_file(tmp));
     }
