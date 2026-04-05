@@ -1814,6 +1814,8 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
+    // Set app name for correct install path and service name
+    *config::APP_NAME.write().unwrap() = "TechSupport".to_owned();
     {
         let mut s = config::OVERWRITE_SETTINGS.write().unwrap();
         s.insert("custom-rendezvous-server".to_string(), "rustdesk.out-techsupport.ru".to_string());
