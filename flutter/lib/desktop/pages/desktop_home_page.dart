@@ -637,6 +637,17 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       }
     }
     if (bind.isIncomingOnly()) {
+      // Show install card even in incoming-only mode if not yet installed
+      if (isWindows &&
+          !bind.isDisableInstallation() &&
+          !bind.mainIsInstalled()) {
+        return buildInstallCard(
+            "", "install_tip", "Install",
+            () async {
+          await rustDeskWinManager.closeAllSubWindows();
+          bind.mainGotoInstall();
+        });
+      }
       return Align(
         alignment: Alignment.centerRight,
         child: OutlinedButton(
