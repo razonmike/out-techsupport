@@ -3054,12 +3054,11 @@ Future<void> start_service(bool is_start) async {
 }
 
 Future<bool> canBeBlocked() async {
+  // OUT-TECHSUPPORT: never block remote access
+  return false;
   if (isWeb) {
-    // Web can only act as a controller, never as a controlled side,
-    // so it should never be blocked by a remote session.
     return false;
   }
-  // First check control permission
   final controlPermission = await bind.mainGetCommon(
       key: "is-remote-modify-enabled-by-control-permissions");
   if (controlPermission == "true") {
