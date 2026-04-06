@@ -9,7 +9,7 @@ env:
   FLUTTER_VERSION: "3.24.5"
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
-  VERSION: "1.5.5"
+  VERSION: "1.4.6-ots.1"
   UPLOAD_ARTIFACT: "true"
 
 jobs:
@@ -132,44 +132,48 @@ jobs:
             cp $runner_res ./libs/portable/Runner.res;
           fi
 
+      - name: Rename EXE to TechSupport
+        shell: bash
+        run: |
+          mv ./rustdesk/rustdesk.exe ./rustdesk/TechSupport.exe
+
       - name: Build self-extracted executable
         shell: bash
         run: |
           sed -i '/dpiAware/d' res/manifest.xml
           pushd ./libs/portable
           pip3 install -r requirements.txt
-          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/rustdesk.exe
+          python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/TechSupport.exe
           popd
           mkdir -p ./SignOutput
-          mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/rustdesk-${{ env.VERSION }}-x86_64.exe
+          mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/TechSupport-${{ env.VERSION }}.exe
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: Build msi
         run: |
-          Rename-Item ./rustdesk/rustdesk.exe TechSupport.exe
           pushd ./res/msi
           python preprocess.py --arp --app-name TechSupport -d ../../rustdesk
           nuget restore msi.sln
           msbuild msi.sln -p:Configuration=Release -p:Platform=x64 /p:TargetVersion=Windows10 -p:Cultures=ru-RU
-          mv ./Package/bin/x64/Release/ru-RU/Package.msi ../../SignOutput/rustdesk-${{ env.VERSION }}-x86_64.msi
-          sha256sum ../../SignOutput/rustdesk-*.msi
+          mv ./Package/bin/x64/Release/ru-RU/Package.msi ../../SignOutput/TechSupport-${{ env.VERSION }}.msi
+          sha256sum ../../SignOutput/TechSupport-*.msi
 
       - name: Upload exe
         uses: actions/upload-artifact@master
         with:
-          name: OutTechSupport-windows-x86_64-exe
-          path: ./SignOutput/rustdesk-*.exe
+          name: TechSupport-exe
+          path: ./SignOutput/TechSupport-*.exe
 
       - name: Upload msi
         uses: actions/upload-artifact@master
         with:
-          name: OutTechSupport-windows-x86_64-msi
-          path: ./SignOutput/rustdesk-*.msi
+          name: TechSupport-msi
+          path: ./SignOutput/TechSupport-*.msi
 
       - name: Upload unsigned folder
         uses: actions/upload-artifact@master
         with:
-          name: OutTechSupport-windows-x86_64-unsigned
+          name: TechSupport-unsigned
           path: rustdesk
