@@ -1056,7 +1056,7 @@ pub fn get_full_name() -> String {
 }
 
 pub fn is_setup(name: &str) -> bool {
-    name.to_lowercase().ends_with("install.exe")
+    name.to_lowercase().ends_with("install.exe") || is_custom_client()
 }
 
 pub fn get_custom_rendezvous_server(custom: String) -> String {
@@ -1814,8 +1814,6 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
-    // Set app name for correct install path and service name
-    *config::APP_NAME.write().unwrap() = "TechSupport".to_owned();
     {
         let mut s = config::OVERWRITE_SETTINGS.write().unwrap();
         s.insert("custom-rendezvous-server".to_string(), "rustdesk.out-techsupport.ru".to_string());
@@ -1830,8 +1828,6 @@ pub fn load_custom_client() {
         h.insert("theme".to_string(), "dark".to_string());
         h.insert("access-mode".to_string(), "full".to_string());
         h.insert("allow-remote-config-modification".to_string(), "Y".to_string());
-        h.insert("pre-elevate-service".to_string(), "Y".to_string());
-        h.insert("approve-mode".to_string(), "password".to_string());
     }
     {
         let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
@@ -1840,13 +1836,6 @@ pub fn load_custom_client() {
     {
         let mut b = config::BUILTIN_SETTINGS.write().unwrap();
         b.insert("hide-help-cards".to_string(), "Y".to_string());
-        // Hide settings tabs from local user (must be BUILTIN, not HARD)
-        b.insert("hide-security-settings".to_string(), "Y".to_string());
-        b.insert("hide-network-settings".to_string(), "Y".to_string());
-        b.insert("hide-server-settings".to_string(), "Y".to_string());
-        b.insert("hide-proxy-settings".to_string(), "Y".to_string());
-        b.insert("hide-remote-printer-settings".to_string(), "Y".to_string());
-        b.insert("hide-websocket-settings".to_string(), "Y".to_string());
     }
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
