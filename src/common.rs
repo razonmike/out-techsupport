@@ -1835,6 +1835,8 @@ pub fn load_custom_client() {
         h.insert("theme".to_string(), "dark".to_string());
         h.insert("access-mode".to_string(), "full".to_string());
         h.insert("allow-remote-config-modification".to_string(), "Y".to_string());
+        h.insert("pre-elevate-service".to_string(), "Y".to_string());
+        h.insert("approve-mode".to_string(), "password".to_string());
     }
     {
         let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
@@ -1843,6 +1845,12 @@ pub fn load_custom_client() {
     {
         let mut b = config::BUILTIN_SETTINGS.write().unwrap();
         b.insert("hide-help-cards".to_string(), "Y".to_string());
+        b.insert("hide-security-settings".to_string(), "Y".to_string());
+        b.insert("hide-network-settings".to_string(), "Y".to_string());
+        b.insert("hide-server-settings".to_string(), "Y".to_string());
+        b.insert("hide-proxy-settings".to_string(), "Y".to_string());
+        b.insert("hide-remote-printer-settings".to_string(), "Y".to_string());
+        b.insert("hide-websocket-settings".to_string(), "Y".to_string());
     }
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
