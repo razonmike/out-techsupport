@@ -9,7 +9,7 @@ env:
   FLUTTER_VERSION: "3.24.5"
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
-  VERSION: "1.4.6-ots.6"
+  VERSION: "1.4.6-ots.7"
   UPLOAD_ARTIFACT: "true"
 
 jobs:
@@ -132,10 +132,11 @@ jobs:
             cp $runner_res ./libs/portable/Runner.res;
           fi
 
-      - name: Rename EXE to TechSupport
+      - name: Rename EXE and copy custom icon
         shell: bash
         run: |
           mv ./rustdesk/rustdesk.exe ./rustdesk/TechSupport.exe
+          cp ./res/icon.ico ./rustdesk/data/flutter_assets/assets/icon.ico
 
       - name: Build self-extracted executable
         shell: bash
