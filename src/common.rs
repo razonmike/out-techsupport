@@ -1056,7 +1056,14 @@ pub fn get_full_name() -> String {
 }
 
 pub fn is_setup(name: &str) -> bool {
-    name.to_lowercase().ends_with("install.exe") || is_custom_client()
+    if name.to_lowercase().ends_with("install.exe") {
+        return true;
+    }
+    #[cfg(windows)]
+    if is_custom_client() && !crate::platform::is_installed() {
+        return true;
+    }
+    false
 }
 
 pub fn get_custom_rendezvous_server(custom: String) -> String {
