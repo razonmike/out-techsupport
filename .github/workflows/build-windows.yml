@@ -149,10 +149,17 @@ jobs:
           mkdir -p ./SignOutput
           mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/TechSupport-${{ env.VERSION }}.exe
 
+      - name: Upload exe
+        uses: actions/upload-artifact@master
+        with:
+          name: TechSupport-exe
+          path: ./SignOutput/TechSupport-*.exe
+
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
       - name: Build msi
+        continue-on-error: true
         run: |
           pushd ./res/msi
           python preprocess.py --arp --app-name TechSupport -d ../../rustdesk
@@ -161,13 +168,8 @@ jobs:
           mv ./Package/bin/x64/Release/ru-RU/Package.msi ../../SignOutput/TechSupport-${{ env.VERSION }}.msi
           sha256sum ../../SignOutput/TechSupport-*.msi
 
-      - name: Upload exe
-        uses: actions/upload-artifact@master
-        with:
-          name: TechSupport-exe
-          path: ./SignOutput/TechSupport-*.exe
-
       - name: Upload msi
+        if: success()
         uses: actions/upload-artifact@master
         with:
           name: TechSupport-msi
