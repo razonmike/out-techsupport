@@ -10,6 +10,7 @@ env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   VERSION: "1.4.6.7"
+  OTS_VERSION: "7"
   UPLOAD_ARTIFACT: "true"
 
 jobs:
@@ -110,6 +111,8 @@ jobs:
         shell: bash
 
       - name: Build rustdesk
+        env:
+          OTS_VERSION: ${{ env.OTS_VERSION }}
         run: |
           python3 .\build.py --portable --hwcodec --flutter --vram --skip-portable-pack
           mv ./flutter/build/windows/x64/runner/Release ./rustdesk
