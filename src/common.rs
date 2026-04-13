@@ -1843,6 +1843,10 @@ pub fn load_custom_client() {
         local.insert("lang".to_string(), "ru".to_string());
     }
     {
+        let mut display = config::OVERWRITE_DISPLAY_SETTINGS.write().unwrap();
+        display.insert("disable_audio".to_string(), "Y".to_string());
+    }
+    {
         let mut b = config::BUILTIN_SETTINGS.write().unwrap();
         b.insert("hide-help-cards".to_string(), "Y".to_string());
         b.insert("hide-security-settings".to_string(), "Y".to_string());
