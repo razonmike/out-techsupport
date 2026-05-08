@@ -2,6 +2,13 @@ name: Build Windows x86_64
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
 
 env:
   SCITER_RUST_VERSION: "1.75"
