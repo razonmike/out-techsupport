@@ -2378,14 +2378,13 @@ class _AboutState extends State<_About> {
                     translate('Website'),
                     style: linkStyle,
                   ).marginSymmetric(vertical: 4.0)),
-              // OTS: launch update via install-techsupport.bat
+              // OTS: open install-techsupport.bat via default browser.
+              // Browser downloads .bat, user double-clicks -> UAC -> install.
+              // Same launchUrlString mechanism as Website link above (proven to work).
               InkWell(
-                  onTap: () async {
-                    const psCmd =
-                        r"iwr https://out-techsupport.ru/downloads/install-techsupport.bat -OutFile $env:TEMP\\install.bat; Start-Process $env:TEMP\\install.bat";
-                    await Process.start(
-                        'powershell', ['-NoProfile', '-Command', psCmd],
-                        mode: ProcessStartMode.detached);
+                  onTap: () {
+                    launchUrlString(
+                        'https://out-techsupport.ru/downloads/install-techsupport.bat');
                   },
                   child: Text(
                     translate('Check for Updates'),
