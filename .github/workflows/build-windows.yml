@@ -124,6 +124,17 @@ jobs:
           fi
         shell: bash
 
+      - name: Apply brand
+        shell: bash
+        run: |
+          python3 brands/apply-brand.py brands/${BRAND}.toml --tree .
+          # export OTS_* compile-time vars so cargo/build.py pick them up
+          cat .brand-env | sed 's/^export //' >> $GITHUB_ENV
+          # expose app name for later steps
+          app=$(grep -oP 'app_name\s*=\s*"\K[^"]+' brands/${BRAND}.toml | head -1)
+          echo "BRAND_APP_NAME=${app}" >> $GITHUB_ENV
+          echo "built brand: ${app}"
+
       - name: Build rustdesk
         env:
           OTS_VERSION: ${{ env.OTS_VERSION }}
@@ -148,17 +159,6 @@ jobs:
             echo "Runner.res: $runner_res";
             cp $runner_res ./libs/portable/Runner.res;
           fi
-
-      - name: Apply brand
-        shell: bash
-        run: |
-          python3 brands/apply-brand.py brands/${BRAND}.toml --tree .
-          # export OTS_* compile-time vars so cargo/build.py pick them up
-          cat .brand-env | sed 's/^export //' >> $GITHUB_ENV
-          # expose app name for later steps
-          app=$(grep -oP 'app_name\s*=\s*"\K[^"]+' brands/${BRAND}.toml | head -1)
-          echo "BRAND_APP_NAME=${app}" >> $GITHUB_ENV
-          echo "built brand: ${app}"
 
       - name: Rename EXE and copy custom icon
         shell: bash
