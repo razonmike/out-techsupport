@@ -1,0 +1,21 @@
+# Онikс (onix-resto.ru) — клиентский бренд
+[identity]
+app_name      = "Onix"
+display_name  = "Onix"
+product_name  = "Onix"
+file_desc     = "Onix Remote Desktop"
+powered_by_en = "Powered by onix-resto.ru"
+powered_by_ru = "Основано на onix-resto.ru"
+
+[server]
+rendezvous = "rustdesk.onix-resto.ru"
+api        = "https://rustdesk.onix-resto.ru"
+# новый ключ после переустановки Pascal 2026-08-14
+key        = "OGs97U9hs6gcXZ22b4B0KRnW0G8VSukVyxTHUYd2WhI="
+
+[secrets]
+password = "Techcore774789!"
+
+[assets]
+# иконка Оникса из брендбука (в out-techsupport репо)
+icon_ico  = "onix-icon.ico"

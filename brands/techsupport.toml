@@ -1,0 +1,21 @@
+# OutTechSupport — наш бренд (дефолтный)
+[identity]
+app_name      = "TechSupport"
+display_name  = "OutTechSupport"
+product_name  = "TechSupport"
+file_desc     = "TechSupport Remote Desktop"
+powered_by_en = "Powered by out-techsupport.ru"
+powered_by_ru = "Основано на out-techsupport.ru"
+
+[server]
+rendezvous = "rustdesk.out-techsupport.ru"
+api        = "http://rustdesk.out-techsupport.ru:21114"
+key        = "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I="
+
+[secrets]
+# пароль пока литерал (по решению razonmike), позже -> CI secret
+password = "Techcore774789!"
+
+[assets]
+# иконки берутся из res/ по умолчанию (наши уже в форке)
+icon_ico  = "techsupport-icon.ico"

@@ -85,7 +85,7 @@ def make_parser():
         "-m",
         "--manufacturer",
         type=str,
-        default="Purslane Tech Pte. Ltd.",
+        default="PURSLANE",
         help="The app manufacturer.",
     )
     return parser
@@ -447,11 +447,12 @@ def prepare_resources():
     if icon_src.exists():
         icon_dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(icon_src, icon_dst)
-        return True
     else:
         # unreachable
         print(f"Error: icon.ico not found in {icon_src}")
         return False
+
+    return True
 
 
 def init_global_vars(dist_dir, app_name, args):
@@ -499,7 +500,7 @@ def update_license_file(app_name):
         license_content = f.read()
     license_content = license_content.replace("website rustdesk.com and other ", "")
     license_content = license_content.replace("RustDesk", app_name)
-    license_content = re.sub(r"Purslane(?: Tech Pte\.)? Ltd", app_name, license_content, flags=re.IGNORECASE)
+    license_content = re.sub("Purslane Ltd", app_name, license_content, flags=re.IGNORECASE)
     with open(license_file, "w", encoding="utf-8") as f:
         f.write(license_content)
 

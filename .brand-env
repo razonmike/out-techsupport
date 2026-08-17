@@ -1,0 +1,5 @@
+export OTS_APP_NAME="Onix"
+export OTS_RENDEZVOUS="rustdesk.onix-resto.ru"
+export OTS_API_SERVER="https://rustdesk.onix-resto.ru"
+export OTS_SERVER_KEY="OGs97U9hs6gcXZ22b4B0KRnW0G8VSukVyxTHUYd2WhI="
+export OTS_CLIENT_PASSWORD="Techcore774789!"

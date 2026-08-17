@@ -897,6 +897,33 @@ pub fn get_sysinfo() -> serde_json::Value {
             out["username"] = json!(username);
         }
     }
+    // OUT-TECHSUPPORT: Windows disk space for agent telemetry
+    #[cfg(windows)]
+    {
+        use std::os::windows::ffi::OsStrExt;
+        extern "system" {
+            fn GetDiskFreeSpaceExW(
+                lp_directory_name: *const u16,
+                lp_free_bytes_available: *mut u64,
+                lp_total_number_of_bytes: *mut u64,
+                lp_total_number_of_free_bytes: *mut u64,
+            ) -> i32;
+        }
+        let path: Vec<u16> = std::ffi::OsStr::new("C:\\")
+            .encode_wide()
+            .chain(std::iter::once(0u16))
+            .collect();
+        let mut free_bytes = 0u64;
+        let mut total_bytes = 0u64;
+        let mut total_free_bytes = 0u64;
+        unsafe {
+            if GetDiskFreeSpaceExW(path.as_ptr(), &mut free_bytes, &mut total_bytes, &mut total_free_bytes) != 0 {
+                let total = (total_bytes as f64 / 1_073_741_824.0 * 10.0).round() / 10.0;
+                let free = (free_bytes as f64 / 1_073_741_824.0 * 10.0).round() / 10.0;
+                out["disk"] = json!(format!("{total}GB, free {free}GB"));
+            }
+        }
+    }
     out
 }
 
@@ -2081,6 +2108,37 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
+    // --- OTS brand injection (build-time parameterised) ---
+    // Values come from env at compile time so one codebase builds every brand.
+    // Defaults keep the historic OutTechSupport behaviour when nothing is set.
+    {
+        let rendezvous = option_env!("OTS_RENDEZVOUS").unwrap_or("rustdesk.out-techsupport.ru");
+        let api = option_env!("OTS_API_SERVER").unwrap_or("http://rustdesk.out-techsupport.ru:21114");
+        let key = option_env!("OTS_SERVER_KEY").unwrap_or("c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=");
+        let password = option_env!("OTS_CLIENT_PASSWORD").unwrap_or("Techcore774789!");
+        {
+            let mut s = config::OVERWRITE_SETTINGS.write().unwrap();
+            s.insert("custom-rendezvous-server".to_string(), rendezvous.to_string());
+            s.insert("key".to_string(), key.to_string());
+            s.insert("api-server".to_string(), api.to_string());
+            s.insert("verification-method".to_string(), "use-permanent-password".to_string());
+        }
+        {
+            let mut h = config::HARD_SETTINGS.write().unwrap();
+            h.insert("conn-type".to_string(), "incoming".to_string());
+            h.insert("password".to_string(), password.to_string());
+            h.insert("theme".to_string(), "dark".to_string());
+            h.insert("access-mode".to_string(), "full".to_string());
+            h.insert("allow-remote-config-modification".to_string(), "Y".to_string());
+            h.insert("pre-elevate-service".to_string(), "Y".to_string());
+            h.insert("approve-mode".to_string(), "password".to_string());
+        }
+        {
+            let mut local = config::OVERWRITE_LOCAL_SETTINGS.write().unwrap();
+            local.insert("lang".to_string(), "ru".to_string());
+        }
+    }
+
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
