@@ -1,4 +1,17 @@
 fn main() {
+    // OUT-TECHSUPPORT: brand values are baked in via option_env! at compile time.
+    // Cargo does NOT rebuild when an env var changes unless told to watch it, so a
+    // cached build from another brand would keep the previous APP_NAME/key/password.
+    for var in [
+        "OTS_APP_NAME",
+        "OTS_RENDEZVOUS",
+        "OTS_API_SERVER",
+        "OTS_SERVER_KEY",
+        "OTS_CLIENT_PASSWORD",
+    ] {
+        println!("cargo:rerun-if-env-changed={}", var);
+    }
+
     let out_dir = format!("{}/protos", std::env::var("OUT_DIR").unwrap());
 
     std::fs::create_dir_all(&out_dir).unwrap();

@@ -96,7 +96,9 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: windows-2022
+          # per-brand cache: brand values are baked in at compile time, a shared
+          # cache leaks the previous brand's APP_NAME into the next build
+          prefix-key: windows-2022-${{ github.event.inputs.brand || 'techsupport' }}
 
       - name: Setup vcpkg with Github Actions binary cache
         uses: lukka/run-vcpkg@v11
