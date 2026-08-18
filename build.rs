@@ -87,6 +87,7 @@ fn main() {
         "OTS_API_SERVER",
         "OTS_SERVER_KEY",
         "OTS_CLIENT_PASSWORD",
+        "OTS_AGENT_HOOK",
     ] {
         println!("cargo:rerun-if-env-changed={}", var);
     }

@@ -93,6 +93,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
       if (!isOutgoingOnly) buildPasswordBoard(context),
+      if (!isOutgoingOnly) buildSystemInfoPanel(context),
       FutureBuilder<Widget>(
         future: Future.value(
             Obx(() => buildHelpCards(stateGlobal.updateUrl.value))),
@@ -277,6 +278,86 @@ class _DesktopHomePageState extends State<DesktopHomePage>
         ),
       ),
       onHover: (value) => hover.value = value,
+    );
+  }
+
+  Widget buildSystemInfoPanel(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.titleLarge?.color;
+    final subStyle = TextStyle(fontSize: 11, color: textColor?.withOpacity(0.6));
+    final valStyle = TextStyle(fontSize: 11, color: textColor?.withOpacity(0.9));
+    return FutureBuilder<String>(
+      future: () async {
+        try {
+          return await bind.mainGetSysinfoJson();
+        } catch (e) {
+          return '{}';
+        }
+      }(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data == '{}') {
+          return const SizedBox.shrink();
+        }
+        Map<String, dynamic> info = {};
+        try {
+          info = jsonDecode(snapshot.data!);
+        } catch (_) {
+          return const SizedBox.shrink();
+        }
+        final hostname = info['hostname'] ?? '';
+        final username = info['username'] ?? '';
+        final ip = info['ip'] ?? '';
+        final os = info['os'] ?? '';
+        final cpu = info['cpu'] ?? '';
+        final memory = info['memory'] ?? '';
+        final disk = info['disk'] ?? '';
+        return Container(
+          margin: const EdgeInsets.only(left: 20, right: 11, top: 8),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: textColor?.withOpacity(0.1) ?? Colors.grey,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (hostname.isNotEmpty)
+                _sysInfoRow(Icons.computer, 'Компьютер', hostname, subStyle, valStyle),
+              if (username.isNotEmpty)
+                _sysInfoRow(Icons.person, 'Пользователь', username, subStyle, valStyle),
+              if (ip.isNotEmpty)
+                _sysInfoRow(Icons.lan, 'IP', ip, subStyle, valStyle),
+              if (os.isNotEmpty)
+                _sysInfoRow(Icons.info_outline, 'ОС', os, subStyle, valStyle),
+              if (cpu.isNotEmpty)
+                _sysInfoRow(Icons.developer_board, 'CPU', cpu, subStyle, valStyle),
+              if (memory.isNotEmpty)
+                _sysInfoRow(Icons.memory, 'RAM', memory, subStyle, valStyle),
+              if (disk.isNotEmpty)
+                _sysInfoRow(Icons.storage, 'DISK', disk, subStyle, valStyle),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _sysInfoRow(
+      IconData icon, String label, String value, TextStyle subStyle, TextStyle valStyle) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: subStyle.color),
+          const SizedBox(width: 6),
+          Text('$label: ', style: subStyle),
+          Flexible(
+            child: SelectableText(value, style: valStyle),
+          ),
+        ],
+      ),
     );
   }
 

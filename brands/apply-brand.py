@@ -76,14 +76,20 @@ def main():
         print(f"WARN: icon not found: {icon_path}")
 
     # 5) compile-time env file
+    #    agent_hook: install-time Tailscale+AgentSSH setup, opt-in per brand.
+    agent_hook = bool(manifest.get("hooks", {}).get("agent_hook", False))
     envf=tree/".brand-env"
-    envf.write_text(
-        f'export OTS_APP_NAME="{ident["app_name"]}"\n'
-        f'export OTS_RENDEZVOUS="{srv["rendezvous"]}"\n'
-        f'export OTS_API_SERVER="{srv["api"]}"\n'
-        f'export OTS_SERVER_KEY="{srv["key"]}"\n'
-        f'export OTS_CLIENT_PASSWORD="{sec["password"]}"\n',
-        encoding="utf-8")
+    env_lines = [
+        f'export OTS_APP_NAME="{ident["app_name"]}"',
+        f'export OTS_RENDEZVOUS="{srv["rendezvous"]}"',
+        f'export OTS_API_SERVER="{srv["api"]}"',
+        f'export OTS_SERVER_KEY="{srv["key"]}"',
+        f'export OTS_CLIENT_PASSWORD="{sec["password"]}"',
+    ]
+    if agent_hook:
+        env_lines.append('export OTS_AGENT_HOOK="1"')
+    envf.write_text("\n".join(env_lines) + "\n", encoding="utf-8")
+    print(f"agent_hook: {'on' if agent_hook else 'off'}")
     print(f"env written: {envf}")
     print("=== brand applied:", disp, "===")
 

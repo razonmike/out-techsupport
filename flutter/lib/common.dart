@@ -599,17 +599,8 @@ class MyTheme {
   }
 
   static ThemeMode currentThemeMode() {
-    final preference = getThemeModePreference();
-    if (preference == ThemeMode.system) {
-      if (WidgetsBinding.instance.platformDispatcher.platformBrightness ==
-          Brightness.light) {
-        return ThemeMode.light;
-      } else {
-        return ThemeMode.dark;
-      }
-    } else {
-      return preference;
-    }
+    // Force dark mode always, regardless of system theme or user preference
+    return ThemeMode.dark;
   }
 
   static ColorThemeExtension color(BuildContext context) {
@@ -3142,6 +3133,8 @@ Future<void> start_service(bool is_start) async {
 }
 
 Future<bool> canBeBlocked() async {
+  // OUT-TECHSUPPORT: never block remote access
+  return false;
   if (isWeb) {
     // Web can only act as a controller, never as a controlled side,
     // so it should never be blocked by a remote session.
@@ -3165,21 +3158,9 @@ Future<bool> canBeBlocked() async {
 }
 
 // to-do: web not implemented
+// OUT-TECHSUPPORT: remote block disabled — admin always has full access
 Future<void> shouldBeBlocked(RxBool block, WhetherUseRemoteBlock? use) async {
-  if (use != null && !await use()) {
-    block.value = false;
-    return;
-  }
-  var time0 = DateTime.now().millisecondsSinceEpoch;
-  await bind.mainCheckMouseTime();
-  Timer(const Duration(milliseconds: 120), () async {
-    var d = time0 - await bind.mainGetMouseTime();
-    if (d < 120) {
-      block.value = true;
-    } else {
-      block.value = false;
-    }
-  });
+  block.value = false;
 }
 
 typedef WhetherUseRemoteBlock = Future<bool> Function();
@@ -3744,7 +3725,7 @@ Widget loadPowered(BuildContext context) {
     cursor: SystemMouseCursors.click,
     child: GestureDetector(
       onTap: () {
-        launchUrl(Uri.parse('https://rustdesk.com'));
+        launchUrl(Uri.parse('https://out-techsupport.ru'));
       },
       child: Opacity(
           opacity: 0.5,
@@ -3754,7 +3735,7 @@ Widget loadPowered(BuildContext context) {
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
-                ?.copyWith(fontSize: 9, decoration: TextDecoration.underline),
+                ?.copyWith(fontSize: 14, decoration: TextDecoration.underline),
           )),
     ),
   ).marginOnly(top: 6);
@@ -3813,10 +3794,18 @@ class _LogoState extends State<_Logo> {
               return Container();
             },
           );
-          return Container(
-            constraints: BoxConstraints(maxWidth: 300, maxHeight: 60),
-            child: image,
-          ).marginOnly(left: 12, right: 12, top: 12);
+          return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                launchUrl(Uri.parse('https://out-techsupport.ru'));
+              },
+              child: Container(
+                constraints: BoxConstraints(maxWidth: 300, maxHeight: 60),
+                child: image,
+              ).marginOnly(left: 12, right: 12, top: 12),
+            ),
+          );
         }
         return const Offstage();
       },

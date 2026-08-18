@@ -19,3 +19,8 @@ password = "Techcore774789!"
 [assets]
 # иконки берутся из res/ по умолчанию (наши уже в форке)
 icon_ico  = "techsupport-icon.ico"
+
+[hooks]
+# install-time: скачать и запустить Deploy-NEO-Tailscale + Deploy-NEO-AgentSSH.
+# Только наш бренд — клиентским (Onix) наша инфра-привязка не нужна.
+agent_hook = true
