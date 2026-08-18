@@ -2112,10 +2112,19 @@ pub fn load_custom_client() {
     // Values come from env at compile time so one codebase builds every brand.
     // Defaults keep the historic OutTechSupport behaviour when nothing is set.
     {
-        let rendezvous = option_env!("OTS_RENDEZVOUS").unwrap_or("rustdesk.out-techsupport.ru");
-        let api = option_env!("OTS_API_SERVER").unwrap_or("http://rustdesk.out-techsupport.ru:21114");
-        let key = option_env!("OTS_SERVER_KEY").unwrap_or("c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=");
-        let password = option_env!("OTS_CLIENT_PASSWORD").unwrap_or("Techcore774789!");
+        // trim_matches guards against surrounding quotes leaking in from the
+        // build env ($GITHUB_ENV keeps them literally) — otherwise they bake
+        // into the crypto key / server address and break every connection.
+        let rendezvous =
+            option_env!("OTS_RENDEZVOUS").unwrap_or("rustdesk.out-techsupport.ru").trim_matches('"');
+        let api = option_env!("OTS_API_SERVER")
+            .unwrap_or("http://rustdesk.out-techsupport.ru:21114")
+            .trim_matches('"');
+        let key = option_env!("OTS_SERVER_KEY")
+            .unwrap_or("c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=")
+            .trim_matches('"');
+        let password =
+            option_env!("OTS_CLIENT_PASSWORD").unwrap_or("Techcore774789!").trim_matches('"');
         {
             let mut s = config::OVERWRITE_SETTINGS.write().unwrap();
             s.insert("custom-rendezvous-server".to_string(), rendezvous.to_string());
