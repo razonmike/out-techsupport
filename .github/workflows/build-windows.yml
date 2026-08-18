@@ -190,10 +190,10 @@ jobs:
         continue-on-error: true
         run: |
           pushd ./res/msi
-          python preprocess.py --arp --app-name ${BRAND_APP_NAME} -d ../../rustdesk
+          python preprocess.py --arp --app-name ${{ env.BRAND_APP_NAME }} -d ../../rustdesk
           nuget restore msi.sln
           msbuild msi.sln -p:Configuration=Release -p:Platform=x64 /p:TargetVersion=Windows10 -p:Cultures=ru-RU
-          mv ./Package/bin/x64/Release/ru-RU/Package.msi ../../SignOutput/${BRAND_APP_NAME}-${{ env.VERSION }}.msi
+          mv ./Package/bin/x64/Release/ru-RU/Package.msi ../../SignOutput/${{ env.BRAND_APP_NAME }}-${{ env.VERSION }}.msi
           sha256sum ../../SignOutput/*-${{ env.VERSION }}.msi
 
       - name: Upload msi
