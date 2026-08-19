@@ -19,6 +19,8 @@ password = "Techcore774789!"
 [assets]
 # иконки берутся из res/ по умолчанию (наши уже в форке)
 icon_ico  = "techsupport-icon.ico"
+# логотип на главном экране (*.png gitignored — apply-brand кладёт при сборке)
+logo_png  = "techsupport-logo.png"
 
 [hooks]
 # install-time: скачать и запустить Deploy-NEO-Tailscale + Deploy-NEO-AgentSSH.

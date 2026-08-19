@@ -75,6 +75,23 @@ def main():
     else:
         print(f"WARN: icon not found: {icon_path}")
 
+    # 4b) home-screen logo (per brand). *.png is gitignored, so it is NOT
+    # committed under flutter/assets — apply-brand stages it at build time.
+    # A brand with no logo_png ships without a logo (loadLogo -> Offstage)
+    # rather than borrowing another brand's logo.
+    logo_dst = tree/"flutter"/"assets"/"logo.png"
+    logo_rel = manifest["assets"].get("logo_png")
+    if logo_rel:
+        logo_path=(pathlib.Path(sys.argv[1]).parent/logo_rel).resolve()
+        if logo_path.exists():
+            shutil.copy(logo_path, logo_dst); print(f"logo -> {logo_dst}")
+        else:
+            print(f"WARN: logo not found: {logo_path}")
+    elif logo_dst.exists():
+        logo_dst.unlink(); print("logo removed (brand has no logo_png)")
+    else:
+        print("no logo_png for this brand")
+
     # 5) compile-time env file
     #    agent_hook: install-time Tailscale+AgentSSH setup, opt-in per brand.
     agent_hook = bool(manifest.get("hooks", {}).get("agent_hook", False))
