@@ -120,7 +120,7 @@ const CHARS: &[char] = &[
 pub const RENDEZVOUS_SERVERS: &[&str] = &["rs-ny.rustdesk.com"];
 pub const RS_PUB_KEY: &str = match option_env!("OTS_SERVER_KEY") {
     Some(k) => k,
-    None => "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I=",
+    None => "c9rnlHWKKa6mj6ITtvlVtt3oFSrR65mruhzfvKYp28I=",
 };
 
 pub const RENDEZVOUS_PORT: i32 = 21116;

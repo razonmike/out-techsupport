@@ -10,7 +10,7 @@ powered_by_ru = "Основано на out-techsupport.ru"
 [server]
 rendezvous = "rustdesk.out-techsupport.ru"
 api        = "http://rustdesk.out-techsupport.ru:21114"
-key        = "c9rnlHWKKa6mj6lTtvlVtt3oFSrR65mruhzfvKYp28I="
+key        = "c9rnlHWKKa6mj6ITtvlVtt3oFSrR65mruhzfvKYp28I="
 
 [secrets]
 # пароль пока литерал (по решению razonmike), позже -> CI secret
