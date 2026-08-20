@@ -124,6 +124,18 @@ def main():
         else:
             print("WARN: logo constraint anchor not found")
 
+    # 4d) in-window corner icon (loadIcon -> assets/icon.png). apply-brand
+    # replaces it per brand so the titlebar corner matches the brand mark.
+    #    (loadIcon tries icon.png first, so the png always wins over icon.svg.)
+    icon_png_rel = manifest["assets"].get("icon_png")
+    if icon_png_rel:
+        icon_png_src = (pathlib.Path(sys.argv[1]).parent/icon_png_rel).resolve()
+        icon_png_dst = tree/"flutter"/"assets"/"icon.png"
+        if icon_png_src.exists():
+            shutil.copy(icon_png_src, icon_png_dst); print(f"corner icon -> {icon_png_dst}")
+        else:
+            print(f"WARN: icon_png not found: {icon_png_src}")
+
     # 5) compile-time env file
     #    agent_hook: install-time Tailscale+AgentSSH setup, opt-in per brand.
     agent_hook = bool(manifest.get("hooks", {}).get("agent_hook", False))

@@ -17,12 +17,12 @@ key        = "OGs97U9hs6gcXZ22b4B0KRnW0G8VSukVyxTHUYd2WhI="
 password = "0n1x#te4"
 
 [assets]
-# иконка Оникса из брендбука (в out-techsupport репо)
+# иконка exe/ярлыка/панели задач = знак ONIX, жирные линии для читаемости в мелком
 icon_ico  = "onix-icon.ico"
-# логотип на главном = только знак ONIX (без тэглайна, по просьбе razonmike),
-# вырезан из брендбук-SVG, белый; slot 90px под знак aspect ~2
+# иконка в уголке окна (loadIcon → assets/icon.png) = тот же знак ONIX
+icon_png  = "onix-icon-corner.png"
+# логотип на главном экране = полный wordmark ONIX+тэглайн (rsvg trim), во всю ширину слота
 logo_png  = "onix-logo.png"
-logo_max_height = 90
 
 [about]
 # синяя плашка в "О приложении": copyright после "© ГОД" + слоган (Slogan_tip)
