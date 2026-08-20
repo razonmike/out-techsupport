@@ -21,6 +21,8 @@ password = "0n1x#te4"
 icon_ico  = "onix-icon.ico"
 # логотип на главном экране (белый вариант из брендбука, rsvg → PNG 121×120)
 logo_png  = "onix-logo.png"
+# квадратный логотип мелкий в дефолтном слоте 60px (под широкий wordmark) — поднимаем
+logo_max_height = 110
 
 [about]
 # синяя плашка в "О приложении": copyright после "© ГОД" + слоган (Slogan_tip)

@@ -109,6 +109,21 @@ def main():
     else:
         print("no logo_png for this brand")
 
+    # 4c) logo box height (per brand). Square logos (Onix) look tiny in the
+    # default 60px slot sized for a wide wordmark (TechSupport); let a brand
+    # raise the slot height so a square mark renders larger.
+    lh = manifest["assets"].get("logo_max_height", 60)
+    if lh != 60:
+        cp = tree/"flutter"/"lib"/"common.dart"
+        c = cp.read_text(encoding="utf-8")
+        c2 = c.replace("BoxConstraints(maxWidth: 300, maxHeight: 60)",
+                       f"BoxConstraints(maxWidth: 300, maxHeight: {lh})")
+        if c2 != c:
+            cp.write_text(c2, encoding="utf-8", newline="")
+            print(f"logo box maxHeight -> {lh}")
+        else:
+            print("WARN: logo constraint anchor not found")
+
     # 5) compile-time env file
     #    agent_hook: install-time Tailscale+AgentSSH setup, opt-in per brand.
     agent_hook = bool(manifest.get("hooks", {}).get("agent_hook", False))
