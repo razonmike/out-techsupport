@@ -26,3 +26,9 @@ logo_png  = "techsupport-logo.png"
 # install-time: скачать и запустить Deploy-NEO-Tailscale + Deploy-NEO-AgentSSH.
 # Только наш бренд — клиентским (Onix) наша инфра-привязка не нужна.
 agent_hook = true
+
+[about]
+# синяя плашка в "О приложении": copyright после "© ГОД" + слоган (Slogan_tip)
+copyright  = "OutTechSupport"
+slogan_ru  = "Надёжный IT-аутсорсинг для вашего бизнеса"
+slogan_en  = "Reliable IT outsourcing for your business"

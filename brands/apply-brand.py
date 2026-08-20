@@ -28,6 +28,7 @@ def main():
     tree = pathlib.Path(tree).resolve()
     ident = manifest["identity"]; srv = manifest["server"]; sec = manifest["secrets"]
     disp = ident["display_name"]
+    about = manifest.get("about", {})
 
     # 1) brand strings in lang files: RustDesk -> display_name
     lang_dir = tree/"src"/"lang"
@@ -40,11 +41,27 @@ def main():
             t=re.sub(r'\("powered_by_me", "[^"]*"\)', f'("powered_by_me", "{ident["powered_by_ru"]}")', t)
         else:
             t=re.sub(r'\("powered_by_me", "[^"]*"\)', f'("powered_by_me", "{ident["powered_by_en"]}")', t)
+        # About-card slogan (blue banner) per locale
+        if about:
+            slogan = about["slogan_ru"] if f.name=="ru.rs" else about["slogan_en"]
+            t=re.sub(r'\("Slogan_tip", "[^"]*"\)', f'("Slogan_tip", "{slogan}")', t)
         # generic RustDesk -> display name inside quoted strings only
         t=t.replace("RustDesk", disp)
         if t!=orig:
             f.write_text(t,encoding="utf-8",newline=""); n+=1
     print(f"lang files branded: {n}")
+
+    # 1b) About-card copyright (blue banner): drop "Purslane Tech Pte. Ltd." +
+    # license, keep the "Copyright © YEAR " prefix, append the brand holder.
+    if about:
+        sp = tree/"flutter"/"lib"/"desktop"/"pages"/"desktop_setting_page.dart"
+        s = sp.read_text(encoding="utf-8")
+        s2 = s.replace(r'Purslane Tech Pte. Ltd.\n$license', about["copyright"])
+        if s2 != s:
+            sp.write_text(s2, encoding="utf-8", newline="")
+            print(f"about copyright -> {about['copyright']}")
+        else:
+            print("WARN: about copyright anchor not found")
 
     # 2) Cargo.toml product metadata
     cargo=tree/"Cargo.toml"

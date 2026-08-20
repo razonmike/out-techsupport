@@ -19,3 +19,11 @@ password = "0n1x#te4"
 [assets]
 # иконка Оникса из брендбука (в out-techsupport репо)
 icon_ico  = "onix-icon.ico"
+# логотип на главном экране (белый вариант из брендбука, rsvg → PNG 121×120)
+logo_png  = "onix-logo.png"
+
+[about]
+# синяя плашка в "О приложении": copyright после "© ГОД" + слоган (Slogan_tip)
+copyright  = "Onix"
+slogan_ru  = "onix-resto.ru"
+slogan_en  = "onix-resto.ru"
