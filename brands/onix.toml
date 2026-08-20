@@ -19,9 +19,10 @@ password = "0n1x#te4"
 [assets]
 # иконка Оникса из брендбука (в out-techsupport репо)
 icon_ico  = "onix-icon.ico"
-# логотип на главном (белый из брендбука, rsvg 600px → PIL trim прозрачных
-# полей → широкий wordmark 603×109, соотношение как у TechSupport → во всю ширину слота)
+# логотип на главном = только знак ONIX (без тэглайна, по просьбе razonmike),
+# вырезан из брендбук-SVG, белый; slot 90px под знак aspect ~2
 logo_png  = "onix-logo.png"
+logo_max_height = 90
 
 [about]
 # синяя плашка в "О приложении": copyright после "© ГОД" + слоган (Slogan_tip)
