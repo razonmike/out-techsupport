@@ -44,7 +44,7 @@ jobs:
             }
           - {
               target: aarch64-apple-darwin,
-              os: macos-14,
+              os: macos-15, # macos-14 image retired on GitHub (run 42490076022)
               extra-build-args: "--screencapturekit",
               arch: aarch64,
               vcpkg-triplet: arm64-osx,
