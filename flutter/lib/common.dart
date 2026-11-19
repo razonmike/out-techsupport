@@ -84,8 +84,6 @@ const double _kPositionEpsilon = 1e-6;
 bool get isMainDesktopWindow =>
     desktopType == DesktopType.main || desktopType == DesktopType.cm;
 
-String get screenInfo => screenInfo_;
-
 /// Check if the app is running with single view mode.
 bool isSingleViewApp() {
   return desktopType == DesktopType.cm;
@@ -1512,13 +1510,6 @@ class AndroidPermissionManager {
   static Timer? _timer;
   static var _current = "";
 
-  static bool isWaitingFile() {
-    if (_completer != null) {
-      return !_completer!.isCompleted && _current == kManageExternalStorage;
-    }
-    return false;
-  }
-
   static Future<bool> check(String type) {
     if (isDesktop || isWeb) {
       return Future.value(true);
@@ -1633,7 +1624,8 @@ String bool2option(String option, bool b) {
   String res;
   if (option.startsWith('enable-') &&
       option != kOptionEnableUdpPunch &&
-      option != kOptionEnableIpv6Punch) {
+      option != kOptionEnableIpv6Punch &&
+      option != kOptionEnableWebrtc) {
     res = b ? defaultOptionYes : 'N';
   } else if (option.startsWith('allow-') ||
       option == kOptionStopService ||
@@ -2285,6 +2277,7 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
   String? password;
   String? switchUuid;
   bool? forceRelay;
+  var loginMethod = '';
   for (int i = 0; i < args.length; i++) {
     switch (args[i]) {
       case '--connect':
@@ -2328,6 +2321,9 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
         password = args[i + 1];
         i++;
         break;
+      case '--request-approval':
+        loginMethod = 'request-approval';
+        break;
       case '--switch_uuid':
         switchUuid = args[i + 1];
         i++;
@@ -2339,11 +2335,15 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
         break;
     }
   }
+  if (loginMethod == 'request-approval') {
+    password = null;
+  }
   if (type != null && id != null) {
     switch (type) {
       case UriLinkType.remoteDesktop:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newRemoteDesktop(id!,
+              loginMethod: loginMethod,
               password: password,
               switchUuid: switchUuid,
               forceRelay: forceRelay);
@@ -2352,30 +2352,35 @@ bool handleUriLink({List<String>? cmdArgs, Uri? uri, String? uriString}) {
       case UriLinkType.fileTransfer:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newFileTransfer(id!,
+              loginMethod: loginMethod,
               password: password, forceRelay: forceRelay);
         });
         break;
       case UriLinkType.viewCamera:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newViewCamera(id!,
+              loginMethod: loginMethod,
               password: password, forceRelay: forceRelay);
         });
         break;
       case UriLinkType.portForward:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newPortForward(id!, false,
+              loginMethod: loginMethod,
               password: password, forceRelay: forceRelay);
         });
         break;
       case UriLinkType.rdp:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newPortForward(id!, true,
+              loginMethod: loginMethod,
               password: password, forceRelay: forceRelay);
         });
         break;
       case UriLinkType.terminal:
         Future.delayed(Duration.zero, () {
           rustDeskWinManager.newTerminal(id!,
+              loginMethod: loginMethod,
               password: password, forceRelay: forceRelay);
         });
         break;
@@ -2472,6 +2477,10 @@ List<String>? urlLinkToCmdArgs(Uri uri) {
 
   var queryParameters =
       uri.queryParameters.map((k, v) => MapEntry(k.toLowerCase(), v));
+  final requestApproval = queryParameters['request-approval'] == 'true';
+  if (requestApproval) {
+    queryParameters.remove('password');
+  }
 
   var key = queryParameters["key"];
   if (id != null) {
@@ -2483,24 +2492,30 @@ List<String>? urlLinkToCmdArgs(Uri uri) {
   if (isMobile && id != null) {
     final forceRelay = queryParameters["relay"] != null;
     final password = queryParameters["password"];
+    final loginMethod = requestApproval ? 'request-approval' : '';
 
     // Determine connection type based on command
     if (command == '--file-transfer') {
       connect(Get.context!, id,
+          loginMethod: loginMethod,
           isFileTransfer: true, forceRelay: forceRelay, password: password);
     } else if (command == '--view-camera') {
       connect(Get.context!, id,
+          loginMethod: loginMethod,
           isViewCamera: true, forceRelay: forceRelay, password: password);
     } else if (command == '--terminal') {
       connect(Get.context!, id,
+          loginMethod: loginMethod,
           isTerminal: true, forceRelay: forceRelay, password: password);
-    } else if (command == 'terminal-admin') {
+    } else if (command == '--terminal-admin') {
       setEnvTerminalAdmin();
       connect(Get.context!, id,
+          loginMethod: loginMethod,
           isTerminal: true, forceRelay: forceRelay, password: password);
     } else {
       // Default to remote desktop for '--connect', '--play', or direct connection
-      connect(Get.context!, id, forceRelay: forceRelay, password: password);
+      connect(Get.context!, id,
+          loginMethod: loginMethod, forceRelay: forceRelay, password: password);
     }
     return null;
   }
@@ -2512,6 +2527,7 @@ List<String>? urlLinkToCmdArgs(Uri uri) {
     var param = queryParameters;
     String? password = param["password"];
     if (password != null) args.addAll(['--password', password]);
+    if (requestApproval) args.add('--request-approval');
     String? switch_uuid = param["switch_uuid"];
     if (switch_uuid != null) args.addAll(['--switch_uuid', switch_uuid]);
     if (param["relay"] != null) args.add("--relay");
@@ -2530,33 +2546,39 @@ connectMainDesktop(String id,
     bool? forceRelay,
     String? password,
     String? connToken,
-    bool? isSharedPassword}) async {
+    bool? isSharedPassword,
+    String loginMethod = ''}) async {
   if (isFileTransfer) {
     await rustDeskWinManager.newFileTransfer(id,
+        loginMethod: loginMethod,
         password: password,
         isSharedPassword: isSharedPassword,
         connToken: connToken,
         forceRelay: forceRelay);
   } else if (isViewCamera) {
     await rustDeskWinManager.newViewCamera(id,
+        loginMethod: loginMethod,
         password: password,
         isSharedPassword: isSharedPassword,
         connToken: connToken,
         forceRelay: forceRelay);
   } else if (isTcpTunneling || isRDP) {
     await rustDeskWinManager.newPortForward(id, isRDP,
+        loginMethod: loginMethod,
         password: password,
         isSharedPassword: isSharedPassword,
         connToken: connToken,
         forceRelay: forceRelay);
   } else if (isTerminal) {
     await rustDeskWinManager.newTerminal(id,
+        loginMethod: loginMethod,
         password: password,
         isSharedPassword: isSharedPassword,
         connToken: connToken,
         forceRelay: forceRelay);
   } else {
     await rustDeskWinManager.newRemoteDesktop(id,
+        loginMethod: loginMethod,
         password: password,
         isSharedPassword: isSharedPassword,
         forceRelay: forceRelay);
@@ -2577,7 +2599,8 @@ connect(BuildContext context, String id,
     bool forceRelay = false,
     String? password,
     String? connToken,
-    bool? isSharedPassword}) async {
+    bool? isSharedPassword,
+    String loginMethod = ''}) async {
   if (id == '') return;
   if (!isDesktop || desktopType == DesktopType.main) {
     try {
@@ -2602,6 +2625,7 @@ connect(BuildContext context, String id,
     if (desktopType == DesktopType.main) {
       await connectMainDesktop(
         id,
+        loginMethod: loginMethod,
         isFileTransfer: isFileTransfer,
         isViewCamera: isViewCamera,
         isTerminal: isTerminal,
@@ -2623,17 +2647,11 @@ connect(BuildContext context, String id,
         'isSharedPassword': isSharedPassword,
         'forceRelay': forceRelay,
         'connToken': connToken,
+        'loginMethod': loginMethod,
       });
     }
   } else {
     if (isFileTransfer) {
-      if (isAndroid) {
-        if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
-          if (!await AndroidPermissionManager.request(kManageExternalStorage)) {
-            return;
-          }
-        }
-      }
       if (isWeb) {
         Navigator.push(
           context,
@@ -2641,6 +2659,7 @@ connect(BuildContext context, String id,
             builder: (BuildContext context) =>
                 desktop_file_manager.FileManagerPage(
                     id: id,
+                    loginMethod: loginMethod,
                     password: password,
                     isSharedPassword: isSharedPassword),
           ),
@@ -2651,6 +2670,7 @@ connect(BuildContext context, String id,
           MaterialPageRoute(
             builder: (BuildContext context) => FileManagerPage(
                 id: id,
+                loginMethod: loginMethod,
                 password: password,
                 isSharedPassword: isSharedPassword,
                 forceRelay: forceRelay),
@@ -2666,6 +2686,7 @@ connect(BuildContext context, String id,
                 desktop_view_camera.ViewCameraPage(
               key: ValueKey(id),
               id: id,
+              loginMethod: loginMethod,
               toolbarState: ToolbarState(),
               password: password,
               isSharedPassword: isSharedPassword,
@@ -2678,6 +2699,7 @@ connect(BuildContext context, String id,
           MaterialPageRoute(
             builder: (BuildContext context) => ViewCameraPage(
                 id: id,
+                loginMethod: loginMethod,
                 password: password,
                 isSharedPassword: isSharedPassword,
                 forceRelay: forceRelay),
@@ -2690,6 +2712,7 @@ connect(BuildContext context, String id,
         MaterialPageRoute(
           builder: (BuildContext context) => TerminalPage(
             id: id,
+            loginMethod: loginMethod,
             password: password,
             isSharedPassword: isSharedPassword,
             forceRelay: forceRelay,
@@ -2704,6 +2727,7 @@ connect(BuildContext context, String id,
             builder: (BuildContext context) => desktop_remote.RemotePage(
               key: ValueKey(id),
               id: id,
+              loginMethod: loginMethod,
               toolbarState: ToolbarState(),
               password: password,
               isSharedPassword: isSharedPassword,
@@ -2716,6 +2740,7 @@ connect(BuildContext context, String id,
           MaterialPageRoute(
             builder: (BuildContext context) => RemotePage(
                 id: id,
+                loginMethod: loginMethod,
                 password: password,
                 isSharedPassword: isSharedPassword,
                 forceRelay: forceRelay),
@@ -3112,6 +3137,15 @@ void onCopyFingerprint(String value) {
     showToast('$value\n${translate("Copied")}');
   } else {
     showToast(translate("no fingerprints"));
+  }
+}
+
+void onCopyId(String value) {
+  if (value.isNotEmpty) {
+    Clipboard.setData(ClipboardData(text: value));
+    showToast('$value\n${translate("Copied")}');
+  } else {
+    showToast(translate("Invalid ID"));
   }
 }
 
@@ -3993,6 +4027,11 @@ bool whitelistNotEmpty() {
   return v != '' && v != ',';
 }
 
+bool idWhitelistNotEmpty() {
+  final v = bind.mainGetOptionSync(key: kOptionIdWhitelist);
+  return v != '' && v != ',';
+}
+
 // `setMovable()` is only supported on macOS.
 //
 // On macOS, the window can be dragged by the tab bar by default.
@@ -4023,7 +4062,8 @@ Widget netWorkErrorWidget() {
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Text(translate("network_error_tip")),
+      if (!gFFI.userModel.networkErrorFromServer.value)
+        Text(translate("network_error_tip")),
       ElevatedButton(
               onPressed: gFFI.userModel.refreshCurrentUser,
               child: Text(translate("Retry")))
