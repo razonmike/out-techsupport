@@ -2544,7 +2544,7 @@ pub fn load_custom_client() {
         let rendezvous =
             option_env!("OTS_RENDEZVOUS").unwrap_or("rustdesk.out-techsupport.ru").trim_matches('"');
         let api = option_env!("OTS_API_SERVER")
-            .unwrap_or("http://rustdesk.out-techsupport.ru:21114")
+            .unwrap_or("https://rustdesk.out-techsupport.ru")
             .trim_matches('"');
         let key = option_env!("OTS_SERVER_KEY")
             .unwrap_or("c9rnlHWKKa6mj6ITtvlVtt3oFSrR65mruhzfvKYp28I=")

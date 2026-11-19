@@ -9,7 +9,7 @@ powered_by_ru = "Основано на out-techsupport.ru"
 
 [server]
 rendezvous = "rustdesk.out-techsupport.ru"
-api        = "http://rustdesk.out-techsupport.ru:21114"
+api        = "https://rustdesk.out-techsupport.ru"
 key        = "c9rnlHWKKa6mj6ITtvlVtt3oFSrR65mruhzfvKYp28I="
 
 [secrets]
